@@ -1,0 +1,106 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Collaborator {
+  id             String                     @id @default(cuid())
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  seniority      EnumCollaboratorSeniority?
+  lastname       String?
+  firstname      String?
+  skillLevels    SkillLevel[]
+  visualizations Visualization[]
+}
+
+model Manager {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Progression {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Skill {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String?
+  skillLevels SkillLevel[]
+  objectives  Objective[]
+  formations  Formation[]
+}
+
+model OneOnOneMeeting {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Visualization {
+  id             String                      @id @default(cuid())
+  createdAt      DateTime                    @default(now())
+  updatedAt      DateTime                    @updatedAt
+  data           Json?
+  typeField      EnumVisualizationTypeField?
+  collaborator   Collaborator?               @relation(fields: [collaboratorId], references: [id])
+  collaboratorId String?
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String?
+  lastName  String?
+  username  String   @unique
+  email     String?  @unique
+  password  String
+  roles     Json
+}
+
+model SkillLevel {
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  level          Int?
+  collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
+  collaboratorId String?
+  skill          Skill?        @relation(fields: [skillId], references: [id])
+  skillId        String?
+}
+
+model Formation {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String?
+  skill       Skill?   @relation(fields: [skillId], references: [id])
+  skillId     String?
+}
+
+model Objective {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String?
+  skill       Skill?   @relation(fields: [skillId], references: [id])
+  skillId     String?
+}
+
+enum EnumCollaboratorSeniority {
+  Option1
+}
+
+enum EnumVisualizationTypeField {
+  Option1
+}
